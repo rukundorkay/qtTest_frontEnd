@@ -6,13 +6,15 @@ import "./index.css";
 import TaskerPage from "./pages/tasks/task";
 import TasksPage from "./pages/tasks/tasks";
 import { PrivateRoute } from "./protectors/Protected";
+import ForgotPage from "./pages/auth/forgot";
 function App() {
   return (
     <Routes>
+      
       <Route path="*" element={<NotFound />} />
-
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot" element={<ForgotPage />} />
 
       <Route path="/dashboard" element={<PrivateRoute />}>
         <Route path="create" element={<TaskerPage />} />

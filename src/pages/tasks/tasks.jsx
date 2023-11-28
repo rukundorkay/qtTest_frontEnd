@@ -117,16 +117,16 @@ const TasksPage = () => {
         </Flex>
         <Box mt={4}>
           <SimpleGrid columns={{ base: 1, lg: 4 }} spacing={5}>
-            <AnalyticsCard title="today taks" number={analytics?.today} />
-            <AnalyticsCard title="weekly tasks" number={analytics?.weekly} />
-            <AnalyticsCard title="monthly tasks" number={analytics?.monthly} />
-            <AnalyticsCard title="all tasks" number={analytics?.total} />
+            <AnalyticsCard title="today taks" number={analytics?.today || 0} />
+            <AnalyticsCard title="weekly tasks" number={analytics?.weekly || 0} />
+            <AnalyticsCard title="monthly tasks" number={analytics?.monthly || 0} />
+            <AnalyticsCard title="all tasks" number={analytics?.total || 0} />
           </SimpleGrid>
 
           <Box mt={5}>
             <Select value={sortOrder} w={60} bg={"white"} onChange={handleSortChange} mb={4}>
-              <option value="asc">Sort Ascending</option>
-              <option value="desc">Sort Descending</option>
+              <option value="asc">Sort by old tasks</option>
+              <option value="desc">Sort by new tasks</option>
             </Select>
 
             {loading ? (

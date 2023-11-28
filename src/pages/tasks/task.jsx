@@ -53,11 +53,18 @@ const TaskerPage = () => {
       try {
         setSubmitting(true);
         const formData = new FormData();
+        const assigneeNames = values?.assignees?.map(
+          (assignee) => assignee?.label
+        );
+        assigneeNames.forEach((assigneeName, index) => {
+          formData.append(`assignees[${index}]`, assigneeName);
+        });
         formData.append("project_name", values.project_name);
         formData.append("name", values.name);
         formData.append("start_date", values.start_date);
         formData.append("end_date", values.end_date);
-        formData.append("assignees", JSON.stringify(values.assignees));
+
+        // formData.append("assignees", assigneeNames.join(","));
         formData.append("description", values.description);
         formData.append("file_attachment", "file_url");
         const res = await API.post(`${API_URL}task/`, formData, {

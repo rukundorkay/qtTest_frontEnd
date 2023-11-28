@@ -1,37 +1,38 @@
 "use client";
 
 import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  Spinner,
-  Stack,
-  Text,
-  useColorModeValue,
-  useToast
+    Box,
+    Button,
+    Flex,
+    FormControl,
+    FormLabel,
+    Heading,
+    Input,
+    Spinner,
+    Stack,
+    Text,
+    useColorModeValue,
+    useToast,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import Cookies from "js-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import { API } from "../../config/api";
 import { API_URL } from "../../config/utils";
-import { loginValidator } from "../../config/validators";
+import { forgotValidator } from "../../config/validators";
 
-export default function LoginPage() {
+export default function ForgotPage() {
+
   const toast = useToast();
   const navigate = useNavigate();
-
   const formik = useFormik({
     initialValues: {
-      username: "",
-      password: "",
+      email: "",
+    
     },
     validate: (values) => {
       try {
-        loginValidator.validateSync(values, { abortEarly: false });
+        forgotValidator.validateSync(values, { abortEarly: false });
       } catch (errors) {
         return errors.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
@@ -42,17 +43,15 @@ export default function LoginPage() {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         setSubmitting(true);
-        const res = await API.post(`${API_URL}auth/login/`, values);
-        console.log(res.data);
-        Cookies.set("token", res?.data?.data.token);
-        Cookies.set("user", JSON.stringify(res?.data?.data.user));
+        await API.post(`${API_URL}auth/forgot-password/`, values);
+        Cookies.set("email", values.email);
         toast({
-          title: "Login success",
+          title: "Instructions sent",
           status: "success",
           duration: 2000,
           isClosable: true,
         });
-        navigate("/dashboard/task");
+        navigate("/reset");
       } catch (err) {
         let errorMessages = [];
         if (err.response && err.response.data) {
@@ -91,10 +90,10 @@ export default function LoginPage() {
       bg={useColorModeValue("gray.50", "gray.800")}
     >
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        {/* <Stack align={'left'}>
-          <Heading fontSize={'2xl'}>Sign in to your account</Heading>
+      <Stack align={'left'}>
+          <Heading fontSize={'2xl'}>Forgot your account password ?</Heading>
         
-        </Stack> */}
+        </Stack> 
         <Box
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}
@@ -107,45 +106,24 @@ export default function LoginPage() {
                 <FormLabel>Email address</FormLabel>
                 <Input
                   type="email"
-                  name="username"
+                  name="email"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.username}
+                  value={formik.values.email}
                 />
-                {formik.touched.username && formik.errors.username && (
-                  <p className=" text-red-500">{formik.errors.username}</p>
+                {formik.touched.email && formik.errors.email && (
+                  <p className=" text-red-500">{formik.errors.email}</p>
                 )}
               </FormControl>
-              <FormControl id="password">
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  name="password"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.password}
-                />
-                {formik.touched.password && formik.errors.password && (
-                  <p className=" text-red-500">{formik.errors.password}</p>
-                )}
-              </FormControl>
+
               <Stack spacing={10}>
-                <Stack
-                  direction={{ base: "column", sm: "row" }}
-                  align={"start"}
-                  justify={"right"}
-                >
-                  <Link className="text-blue-400" to={"/forgot"}>
-                    Forgot password ?
-                  </Link>
-                </Stack>
                 <Button
                   type="submit"
                   bg={"blue.400"}
                   color={"white"}
                   size="lg"
                   isLoading={formik.isSubmitting}
-                  loadingText="Logging you in"
+                  loadingText="Sending instructions"
                   isDisabled={!formik.isValid || formik.isSubmitting}
                   _hover={{
                     bg: "blue.500",
@@ -154,16 +132,16 @@ export default function LoginPage() {
                   {formik.isSubmitting ? (
                     <Spinner size="sm" color="white" mr="2" />
                   ) : (
-                    <>Sign in</>
+                    <>Send instructions</>
                   )}
                 </Button>
               </Stack>
 
               <Stack pt={6}>
                 <Text textAlign="center">
-                  Dont have an account?{" "}
-                  <Link to={"/register"} className="text-blue-400">
-                    Create account
+                  Back to{" "}
+                  <Link to={"/"} className="text-blue-400">
+                    login
                   </Link>
                 </Text>
               </Stack>

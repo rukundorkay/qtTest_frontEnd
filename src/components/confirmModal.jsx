@@ -9,24 +9,30 @@ import {
   ModalFooter,
   Button,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { API } from "../config/api";
 import { API_URL, token } from "../config/utils";
 
-const ConfirmModal = ({ isOpen, onClose, onConfirm }) => {
-    
+const ConfirmModal = ({ isOpen, onClose, taskId }) => {
   const [loading, setLoading] = useState(false);
-  const toast = useToast()
+  const toast = useToast();
   const deleteTask = async () => {
     setLoading(true);
-    await API.get(`${API_URL}task`, {
+    await API.delete(`${API_URL}task/${taskId}`, {
       headers: { Authorization: `Token ${token}` },
     })
       .then((response) => {
         console.log(response);
         setLoading(false);
-     
+        toast({
+            title: "Task deleted",
+            status: "success",
+         
+          });
+        onClose()
+        window.location.reload()
       })
       .catch((error) => {
         setLoading(false);
@@ -48,9 +54,20 @@ const ConfirmModal = ({ isOpen, onClose, onConfirm }) => {
         <ModalCloseButton />
         <ModalBody>Are you sure you want to delete this task?</ModalBody>
         <ModalFooter>
-          <Button colorScheme="red" onClick={onConfirm}>
-            Yes, I am sure
+          <Button
+            colorScheme="red" onClick={deleteTask}
+            isLoading={loading}
+            loadingText="Deleting task ..."
+    
+          >
+            {loading ? (
+              <Spinner size="sm" color="white" mr="2" />
+            ) : (
+              <> Yes, I am sure</>
+            )}
           </Button>
+
+  
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
